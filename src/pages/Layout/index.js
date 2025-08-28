@@ -19,7 +19,7 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 import "./index.scss";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const { Header, Sider } = Layout;
 
@@ -49,6 +49,11 @@ const GeekLayout = () => {
     navigate(path);
   };
 
+  //反向高亮
+  const location = useLocation();
+  console.log(location.pathname);
+  const selectedkey = location.pathname;
+
   return (
     <Layout>
       <Header className="header">
@@ -67,7 +72,8 @@ const GeekLayout = () => {
           <Menu
             mode="inline"
             theme="dark"
-            defaultSelectedKeys={["1"]}
+            // defaultSelectedKeys={["1"]}默认选中
+            selectedKeys={selectedkey}
             onClick={onMenuClick}
             // ant design 的 api 文档中有说明onClick 的“类型”列有说明，是一个对象，里面有 key 字段
             items={items}
