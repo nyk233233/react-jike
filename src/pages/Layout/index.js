@@ -20,7 +20,9 @@ import {
 } from "@ant-design/icons";
 import "./index.scss";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserInfo } from "@/store/modules/user";
 const { Header, Sider } = Layout;
 
 const items = [
@@ -54,12 +56,20 @@ const GeekLayout = () => {
   console.log(location.pathname);
   const selectedkey = location.pathname;
 
+  //触发个人用户信息
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchUserInfo());
+  }, [dispatch]);
+  //异步操作处理 ： fetchUserInfo() 是一个异步action创建函数，它返回一个函数而不是普通action对象
+  //中间件支持 ：通过dispatch调用异步action，使得Redux可以借助中间件（如Redux Toolkit内置的thunk中间件）处理异步逻辑
+  const name = useSelector((state) => state.user.userInfo.name); //useSelector从redux中获取数据
   return (
     <Layout>
       <Header className="header">
         <div className="logo" />
         <div className="user-info">
-          <span className="user-name">柴柴老师</span>
+          <span className="user-name">{name}</span>
           <span className="user-logout">
             <Popconfirm title="是否确认退出？" okText="退出" cancelText="取消">
               <LogoutOutlined /> 退出

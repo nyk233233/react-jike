@@ -12,6 +12,7 @@ const useStore = createSlice({
   //1. Redux的token本质上存储在内存中的状态对象里
   initialState: {
     token: getToken() || "",
+    userInfo: {},
   },
   //同步修改方法
   // reducers 对象用于定义同步修改状态的方法
@@ -28,11 +29,14 @@ const useStore = createSlice({
       // localStorage.setItem("token_key", action.payload);
       _setToken(action.payload);
     },
+    setUserInfo(state, action) {
+      state.userInfo = action.payload;
+    },
   },
 });
 //解构出actionCreater
 // 从 useStore 的 actions 对象中解构出 setToken action 创建函数，该函数用于创建修改 token 的 action
-const { setToken } = useStore.actions;
+const { setToken, setUserInfo } = useStore.actions;
 
 // 原代码存在错误，useStore.reducers 是错误的访问方式，应该使用 useStore.reducer 获取 reducer 函数
 // 获取用户状态管理的 reducer 函数，该函数用于处理 state 的更新逻辑
@@ -60,8 +64,16 @@ const fetchLogin = (loginForm) => {
   };
 };
 
+//获取个人用户信息异步方法
+const fetchUserInfo = () => {
+  return async (dispatch) => {
+    const res = await request.get("/user/profile");
+    dispatch(setUserInfo(res.data));
+  };
+};
+
 // 导出 setToken action 创建函数，方便在其他地方调用以触发状态更新
-export { fetchLogin, setToken };
+export { fetchLogin, setToken, fetchUserInfo };
 
 // 默认导出用户状态管理的 reducer 函数，用于在 store 中注册
 export default userReducer;
