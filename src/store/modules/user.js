@@ -1,6 +1,8 @@
 //和用户相关的状态管理
 import { createSlice } from "@reduxjs/toolkit";
 import { request } from "@/utils";
+import { setToken as _setToken, getToken } from "@/utils";
+
 // useStore 是通过 createSlice 创建的对象，用于管理用户相关的状态。
 // createSlice 会自动生成 action 创建函数和 reducer 函数，方便进行状态管理。
 // 借助 useStore 可以方便地获取状态修改的 action 和处理状态更新的 reducer。
@@ -9,7 +11,7 @@ const useStore = createSlice({
   //数据状态
   //1. Redux的token本质上存储在内存中的状态对象里
   initialState: {
-    token: localStorage.getItem("token_key") || "",
+    token: getToken() || "",
   },
   //同步修改方法
   // reducers 对象用于定义同步修改状态的方法
@@ -21,8 +23,10 @@ const useStore = createSlice({
       // 将 action.payload 的值赋给 state.token，从而更新状态中的 token 值
       // action.payload 由调用 setToken action 创建函数时传入，通常在组件中调用 setToken 时定义该值
       state.token = action.payload;
+
       //localstorage也存一份
-      localStorage.setItem("token_key", action.payload);
+      // localStorage.setItem("token_key", action.payload);
+      _setToken(action.payload);
     },
   },
 });
