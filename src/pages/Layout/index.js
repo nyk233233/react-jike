@@ -19,28 +19,36 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 import "./index.scss";
+import { Outlet, useNavigate } from "react-router-dom";
 
 const { Header, Sider } = Layout;
 
 const items = [
   {
     label: "首页",
-    key: "1",
+    key: "/",
     icon: <HomeOutlined />,
   },
   {
     label: "文章管理",
-    key: "2",
+    key: "/article",
     icon: <DiffOutlined />,
   },
   {
     label: "创建文章",
-    key: "3",
+    key: "/publish",
     icon: <EditOutlined />,
   },
 ];
 
 const GeekLayout = () => {
+  const navigate = useNavigate();
+  const onMenuClick = (route) => {
+    console.log("菜单点击", route);
+    const path = route.key;
+    navigate(path);
+  };
+
   return (
     <Layout>
       <Header className="header">
@@ -60,12 +68,14 @@ const GeekLayout = () => {
             mode="inline"
             theme="dark"
             defaultSelectedKeys={["1"]}
+            onClick={onMenuClick}
+            // ant design 的 api 文档中有说明onClick 的“类型”列有说明，是一个对象，里面有 key 字段
             items={items}
             style={{ height: "100%", borderRight: 0 }}
           ></Menu>
         </Sider>
         <Layout className="layout-content" style={{ padding: 20 }}>
-          内容
+          <Outlet />
         </Layout>
       </Layout>
     </Layout>

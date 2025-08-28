@@ -1,10 +1,12 @@
-import { Button } from "antd";
+
+
+import { RouterProvider } from 'react-router-dom';
+import router from './router';
 
 function App() {
   return (
-    <div>
-      this is Abbpp<Button type="primary">test</Button>
-    </div>
+    <RouterProvider router={router} />
   );
 }
+
 export default App;
