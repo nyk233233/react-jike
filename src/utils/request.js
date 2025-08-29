@@ -1,13 +1,14 @@
 //axios的封装
 import axios from "axios";
 import { getToken } from "./token";
+
 //1.根域名配置
 //2.超时时间
 //3.请求拦截器，响应拦截器
 
 const http = axios.create({
   baseURL: "http://geek.itheima.net/v1_0",
-  timeout: 5000,
+  timeout: 10000, // 从5000ms延长到10000ms
 });
 
 // 添加请求拦截器

@@ -22,7 +22,7 @@ import "./index.scss";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUserInfo } from "@/store/modules/user";
+import { clearUserInfo, fetchUserInfo } from "@/store/modules/user";
 const { Header, Sider } = Layout;
 
 const items = [
@@ -63,6 +63,14 @@ const GeekLayout = () => {
   }, [dispatch]);
   //异步操作处理 ： fetchUserInfo() 是一个异步action创建函数，它返回一个函数而不是普通action对象
   //中间件支持 ：通过dispatch调用异步action，使得Redux可以借助中间件（如Redux Toolkit内置的thunk中间件）处理异步逻辑
+
+  //退出登录确认回调
+  const onConfirm = () => {
+    console.log("确认退出");
+    dispatch(clearUserInfo());
+    navigate("/login");
+  };
+
   const name = useSelector((state) => state.user.userInfo.name); //useSelector从redux中获取数据
   return (
     <Layout>
@@ -71,7 +79,12 @@ const GeekLayout = () => {
         <div className="user-info">
           <span className="user-name">{name}</span>
           <span className="user-logout">
-            <Popconfirm title="是否确认退出？" okText="退出" cancelText="取消">
+            <Popconfirm
+              title="是否确认退出？"
+              okText="退出"
+              cancelText="取消"
+              onConfirm={onConfirm}
+            >
               <LogoutOutlined /> 退出
             </Popconfirm>
           </span>
