@@ -1,8 +1,10 @@
 //和用户相关的状态管理
 import { createSlice } from "@reduxjs/toolkit";
-import { request } from "@/utils";
+
 import { setToken as _setToken, getToken } from "@/utils";
 import { removeToken } from "@/utils";
+import { getProfileAPI } from "@/apis/user";
+import { loginAPI } from "@/apis/user";
 
 // useStore 是通过 createSlice 创建的对象，用于管理用户相关的状态。
 // createSlice 会自动生成 action 创建函数和 reducer 函数，方便进行状态管理。
@@ -58,7 +60,7 @@ const userReducer = useStore.reducer;
 const fetchLogin = (loginForm) => {
   return async (dispatch) => {
     //1.发送异步请求,账号存在则返回token，不存在注册后并自动登录同时返回token
-    const res = await request.post("/authorizations", loginForm);
+    const res = await loginAPI(loginForm);
     //2.提交同步action进行token的存入
     dispatch(setToken(res.data.token));
     // 当调用 dispatch(setToken(res.data.token)) 时，发生以下步骤：
@@ -73,7 +75,7 @@ const fetchLogin = (loginForm) => {
 //获取个人用户信息异步方法
 const fetchUserInfo = () => {
   return async (dispatch) => {
-    const res = await request.get("/user/profile");
+    const res = await getProfileAPI();
     dispatch(setUserInfo(res.data));
   };
 };
