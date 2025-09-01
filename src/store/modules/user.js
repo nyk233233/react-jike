@@ -73,21 +73,8 @@ const fetchLogin = (loginForm) => {
 //获取个人用户信息异步方法
 const fetchUserInfo = () => {
   return async (dispatch) => {
-    try {
-      // 由于后端接口可能不可用，这里添加mock数据
-      // 先尝试请求，请求失败时使用mock数据
-      const res = await request.get("/user/profile");
-      dispatch(setUserInfo(res.data));
-    } catch (error) {
-      console.error("获取用户信息失败，使用mock数据:", error);
-      // 使用mock数据，确保应用能够正常显示
-      dispatch(setUserInfo({
-        name: "测试用户",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=user",
-        email: "test@example.com",
-        // 其他必要的用户信息字段
-      }));
-    }
+    const res = await request.get("/user/profile");
+    dispatch(setUserInfo(res.data));
   };
 };
 
