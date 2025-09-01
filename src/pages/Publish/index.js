@@ -13,6 +13,9 @@ import { PlusOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import "./index.scss";
 
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+
 const { Option } = Select;
 
 const Publish = () => {
@@ -53,7 +56,15 @@ const Publish = () => {
             label="内容"
             name="content"
             rules={[{ required: true, message: "请输入文章内容" }]}
-          ></Form.Item>
+          >
+            {/* 富文本编辑器 */}
+            <ReactQuill
+              className="publish-quill"
+              //在其他第三方组件中修改样式也是这个道理，先找到对应的盒子名称，然后加一个自己的类名
+              theme="snow"
+              placeholder="请输入文章内容"
+            />
+          </Form.Item>
 
           <Form.Item wrapperCol={{ offset: 4 }}>
             <Space>
