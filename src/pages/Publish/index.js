@@ -121,6 +121,7 @@ const Publish = () => {
                 action={"http://127.0.0.1:4523/mock/7035781/v1_0/upload"}
                 name="image"
                 onChange={onChange}
+                maxCount={imageType}
               >
                 <div style={{ marginTop: 8 }}>
                   <PlusOutlined />
