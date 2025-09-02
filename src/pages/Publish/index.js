@@ -56,6 +56,12 @@ const Publish = () => {
     console.log("正在上传中", value);
     setImageList(value.fileList);
   };
+  //切换图片封面类型
+  const [imageType, setImageType] = useState(0);
+  const onTypeChange = (e) => {
+    console.log("切换封面了", e.target.value);
+    setImageType(e.target.value);
+  };
   return (
     <div className="publish">
       <Card
@@ -71,7 +77,7 @@ const Publish = () => {
         <Form
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 16 }}
-          initialValues={{ type: 1 }}
+          initialValues={{ type: 0 }}
           onFinish={onFinish}
         >
           <Form.Item
@@ -97,28 +103,32 @@ const Publish = () => {
           </Form.Item>
 
           <Form.Item label="封面">
-            <Form.Item name="type">
+            <Form.Item name="type" onChange={onTypeChange}>
               <Radio.Group>
                 <Radio value={1}>单图</Radio>
                 <Radio value={3}>三图</Radio>
                 <Radio value={0}>无图</Radio>
               </Radio.Group>
             </Form.Item>
+
             {/* listType:决定选择文件框外观样式 */}
             {/* showUploadList：控制显示上传列表。showUploadList默认为true，其实不用在这里指定 */}
-            <Upload
-              listType="picture-card"
-              showUploadList
-              // action={"http://geek.itheima.net/v1_0/upload"}
-              action={"http://127.0.0.1:4523/mock/7035781/v1_0/upload"}
-              name="image"
-              onChange={onChange}
-            >
-              <div style={{ marginTop: 8 }}>
-                <PlusOutlined />
-              </div>
-            </Upload>
+            {imageType > 0 && (
+              <Upload
+                listType="picture-card"
+                showUploadList
+                // action={"http://geek.itheima.net/v1_0/upload"}
+                action={"http://127.0.0.1:4523/mock/7035781/v1_0/upload"}
+                name="image"
+                onChange={onChange}
+              >
+                <div style={{ marginTop: 8 }}>
+                  <PlusOutlined />
+                </div>
+              </Upload>
+            )}
           </Form.Item>
+
           <Form.Item
             label="内容"
             name="content"
