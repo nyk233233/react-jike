@@ -5,3 +5,10 @@ export function getChannelAPI() {
     method: "GET",
   });
 }
+export function createArticleAPI(data) {
+  return request({
+    url: "/mp/articles?draft=fales",
+    method: "POST",
+    data,
+  });
+}
