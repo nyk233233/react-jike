@@ -16,22 +16,15 @@ import "./index.scss";
 
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
-import { useEffect, useState } from "react";
-import { createArticleAPI, getChannelAPI } from "@/apis/article";
+import { useState } from "react";
+import { createArticleAPI } from "@/apis/article";
+import { useChannel } from "@/hooks/useChannel";
 
 const { Option } = Select;
 
 const Publish = () => {
-  const [channelList, setChannelList] = useState([]);
-  useEffect(() => {
-    //1.封装函数，在函数体内调用接口
-    const getChannelList = async () => {
-      const res = await getChannelAPI();
-      setChannelList(res.data.channels);
-    };
-    //2.调用函数
-    getChannelList();
-  }, []);
+  //获取频道列表
+  const { channelList } = useChannel();
 
   //提交表单
   const onFinish = (formValue) => {
@@ -107,8 +100,8 @@ const Publish = () => {
           </Form.Item>
 
           <Form.Item label="封面">
-            <Form.Item name="type" onChange={onTypeChange}>
-              <Radio.Group>
+            <Form.Item name="type">
+              <Radio.Group onChange={onTypeChange}>
                 <Radio value={1}>单图</Radio>
                 <Radio value={3}>三图</Radio>
                 <Radio value={0}>无图</Radio>
