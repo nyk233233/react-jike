@@ -136,7 +136,16 @@ const Article = () => {
     });
     //4.重新拉取文章列表
   };
-
+  //分页
+  const onPageChange = (page) => {
+    console.log(page);
+    //修改参数依赖项，印发数据的重新获取列表渲染
+    //你能分页是因为一次性拿到了所有数据，但是这里要做的是一次只请求那一页的数据
+    setReqData({
+      ...reqData,
+      page, //展开后给一个新page
+    });
+  };
   return (
     <div>
       <Card
@@ -188,7 +197,17 @@ const Article = () => {
       </Card>
       {/* 表格区域 */}
       <Card title={`根据筛选条件共查询到 ${count} 条结果：`}>
-        <Table rowKey="id" columns={columns} dataSource={list} />
+        <Table
+          rowKey="id"
+          columns={columns}
+          dataSource={list}
+          pagination={{
+            //分页展示：页数=总数/每页条数。（点击分页拿到当前的页数）
+            total: count,
+            pageSize: reqData.per_page,
+            onChange: onPageChange,
+          }}
+        />
       </Card>
     </div>
   );
