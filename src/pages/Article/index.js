@@ -7,6 +7,7 @@ import {
   Radio,
   DatePicker,
   Select,
+  Popconfirm,
 } from "antd";
 //引入汉化包，时间选择器选择中文
 import locale from "antd/es/date-picker/locale/zh_CN";
@@ -17,7 +18,7 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import img404 from "@/assets/error.png";
 import { useChannel } from "@/hooks/useChannel";
 import { useEffect, useState } from "react";
-import { getArticleListAPI } from "@/apis/article";
+import { delArticleAPI, getArticleListAPI } from "@/apis/article";
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -74,12 +75,20 @@ const Article = () => {
         return (
           <Space size="middle">
             <Button type="primary" shape="circle" icon={<EditOutlined />} />
-            <Button
-              type="primary"
-              danger
-              shape="circle"
-              icon={<DeleteOutlined />}
-            />
+            <Popconfirm
+              title="删除文章"
+              description="确认要删除当前文章吗"
+              onConfirm={() => onConfirm(data)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button
+                type="primary"
+                danger
+                shape="circle"
+                icon={<DeleteOutlined />}
+              />
+            </Popconfirm>
           </Space>
         );
       },
@@ -146,6 +155,17 @@ const Article = () => {
       page, //展开后给一个新page
     });
   };
+
+  //删除
+  const onConfirm = async (data) => {
+    console.log("删除点了");
+    await delArticleAPI(data.id);
+    setReqData({
+      //调用setReqData时，虽然reqData本身并没有改变，但是React会发现新生成的对象与之前的对象不同，因此会触发组件重渲染和useEffect钩子的执行
+      ...reqData,
+    });
+  };
+  //最好页码重置一下，不然如果当前页只有一条数据，删除掉后就没有数据了，再查询当前页就查询不到数据了
   return (
     <div>
       <Card
