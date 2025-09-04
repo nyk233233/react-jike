@@ -8,8 +8,8 @@ import router from "@/router";
 //3.请求拦截器，响应拦截器
 
 const http = axios.create({
-  // baseURL: "http://geek.itheima.net/v1_0",
-  baseURL: "http://127.0.0.1:4523/mock/7035781",
+  baseURL: "http://geek.itheima.net/v1_0",
+  // baseURL: "http://127.0.0.1:4523/mock/7035781",
   timeout: 10000, // 从5000ms延长到10000ms
 });
 

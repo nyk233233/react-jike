@@ -114,8 +114,8 @@ const Publish = () => {
               <Upload
                 listType="picture-card"
                 showUploadList
-                // action={"http://geek.itheima.net/v1_0/upload"}
-                action={"http://127.0.0.1:4523/mock/7035781/v1_0/upload"}
+                action={"http://geek.itheima.net/v1_0/upload"}
+                // action={"http://127.0.0.1:4523/mock/7035781/v1_0/upload"}
                 name="image"
                 onChange={onChange}
                 maxCount={imageType}
