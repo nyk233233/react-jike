@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Card,
   Breadcrumb,
@@ -24,6 +24,7 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 const Article = () => {
+  const navigate = useNavigate();
   const { channelList } = useChannel();
   //定义枚举状态----如果适配的状态有多个用枚举渲染
   const status = {
@@ -74,7 +75,12 @@ const Article = () => {
       render: (data) => {
         return (
           <Space size="middle">
-            <Button type="primary" shape="circle" icon={<EditOutlined />} />
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<EditOutlined />}
+              onClick={() => navigate(`/publish?id=${data.id}`)} //这里为啥用箭头函数引导navigate？
+            />
             <Popconfirm
               title="删除文章"
               description="确认要删除当前文章吗"
@@ -94,21 +100,8 @@ const Article = () => {
       },
     },
   ];
-  // 准备表格body数据
-  const data = [
-    {
-      id: "8218",
-      comment_count: 0,
-      cover: {
-        images: [],
-      },
-      like_count: 0,
-      pubdate: "2019-03-11 09:00:00",
-      read_count: 2,
-      status: 2,
-      title: "wkwebview离线化加载h5资源解决方案",
-    },
-  ];
+
+  // 注意：之前的静态测试数据已删除，现在使用API获取的动态数据
   //筛选功能
   //1.准备参数
   const [reqData, setReqData] = useState({
@@ -166,6 +159,7 @@ const Article = () => {
     });
   };
   //最好页码重置一下，不然如果当前页只有一条数据，删除掉后就没有数据了，再查询当前页就查询不到数据了
+  //如果删除的是最后一页并且只有一条数据，page需要减1
   return (
     <div>
       <Card
