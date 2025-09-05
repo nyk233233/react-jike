@@ -79,7 +79,8 @@ const Article = () => {
               type="primary"
               shape="circle"
               icon={<EditOutlined />}
-              onClick={() => navigate(`/publish?id=${data.id}`)} //这里为啥用箭头函数引导navigate？
+              onClick={() => navigate(`/publish?id=${data.id}`)} //这里为啥用箭头函数引导navigate？：闭包
+              //这里是编辑回调触发的关键
             />
             <Popconfirm
               title="删除文章"
