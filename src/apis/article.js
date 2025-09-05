@@ -5,6 +5,7 @@ export function getChannelAPI() {
     method: "GET",
   });
 }
+//提交文章表单
 export function createArticleAPI(data) {
   return request({
     url: "/mp/articles?draft=fales",
@@ -33,5 +34,13 @@ export function delArticleAPI(id) {
 export function getArticleById(id) {
   return request({
     url: `/mp/articles/${id}`,
+  });
+}
+//更新文章
+export function updateArticleAPI(data) {
+  return request({
+    url: `/mp/articles/${data.id}?draft=fales`,
+    method: "PUT",
+    data,
   });
 }

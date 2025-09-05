@@ -17,7 +17,11 @@ import "./index.scss";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { useEffect, useState } from "react";
-import { createArticleAPI, getArticleById } from "@/apis/article";
+import {
+  createArticleAPI,
+  getArticleById,
+  updateArticleAPI,
+} from "@/apis/article";
 import { useChannel } from "@/hooks/useChannel";
 
 const { Option } = Select;
@@ -39,12 +43,26 @@ const Publish = () => {
       content,
       cover: {
         type: imageType, //当前封面模式
-        images: imageList.map((item) => item.response.data.url), //图片列表
+        //这里的url处理逻辑只是在新增的时候的逻辑
+        //编辑的时候，回填图片和新增图片的存储是不相同的
+        // images: imageList.map((item) => item.response.data.url), //图片列表
+        images: imageList.map((item) => {
+          if (item.response) {
+            return item.response.data.url;
+          } else {
+            return item.url;
+          }
+        }),
       },
       channel_id,
     };
     //2.调用接口提交
-    createArticleAPI(reqData);
+    //处理调用不同接口 新增-新增接口 编辑-编辑接口 用有无id区分两者
+    if (articleId) {
+      updateArticleAPI({ ...reqData, id: articleId });
+    } else {
+      createArticleAPI(reqData);
+    }
   };
 
   //上传回调
