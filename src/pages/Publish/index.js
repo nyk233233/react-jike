@@ -70,8 +70,22 @@ const Publish = () => {
     //1.通过id获取数据
     async function getArticleDetail() {
       const res = await getArticleById(articleId);
+
       //setfieldsvalue传参是对象，setfieldvalue传参是属性名和对应value值，前者能传一堆值，后者只能传一组值
-      form.setFieldsValue(res.data);
+      // form.setFieldsValue(res.data);但是当前写法无法回填封面
+      //数据结构的问题，set方法要直接传{type ： 3}
+      form.setFieldsValue({
+        ...res.data, //这里两步，展开后添加新type，最后输出的还是一个整体
+        type: res.data.cover.type,
+      });
+      //回填图片列表
+      setImageType(res.data.cover.type);
+      //显示图片({url:url})
+      setImageList(
+        res.data.cover.images.map((url) => {
+          return { url };
+        })
+      );
     }
     getArticleDetail();
     //2.调用实例方法，完成回填
@@ -137,6 +151,7 @@ const Publish = () => {
                 name="image"
                 onChange={onChange}
                 maxCount={imageType}
+                fileList={imageList} //图片回填需要此处绑定
               >
                 <div style={{ marginTop: 8 }}>
                   <PlusOutlined />
