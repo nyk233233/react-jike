@@ -3,13 +3,92 @@
 }
 
 .header {
+  position: relative;
   padding: 0;
+  height: 100px; // 增高头部容纳横幅与搜索
+  overflow: hidden;
+  border-radius: 0 0 12px 12px; // 仅底部圆角 8px
+}
+
+/* 顶部横幅背景 */
+.top-banner {
+  position: absolute;
+  inset: 0;
+  background: url("~@/assets/完成比例图.png") center/cover no-repeat; // 你可以替换为自己的长条图
+  filter: brightness(1.1);
+  border-radius: inherit; // 继承父级圆角
+}
+
+/* 覆盖层用于放置 logo、搜索与用户信息 */
+.header-overlay {
+  position: relative;
+  z-index: 1; // 确保在横幅之上
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 16px 0 16px;
+}
+
+/* 轻微半透明遮罩，避免背景图对表单控件干扰（位于内容下方） */
+.header-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.12); // 你可按需调整强度
+  pointer-events: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  z-index: 0;
+  border-radius: inherit; // 与父级保持一致圆角
+}
+
+/* 叠加内容位于遮罩之上 */
+.logo,
+.search-wrapper,
+.user-info {
+  position: relative;
+  z-index: 1;
 }
 
 .logo {
   width: 200px;
   height: 60px;
-  background: url("~@/assets/logo.png") no-repeat center / 160px auto;
+  background: url("~@/assets/logo4.png") no-repeat center / 200px auto;
+}
+
+/* 搜索栏位于 logo 右侧，水平居中伸展 */
+.search-wrapper {
+  flex: 1;
+  max-width: 560px;
+  margin: 60px auto 90px; // 让搜索尽量居中
+  padding: 0 16px;
+}
+
+/* 输入框可读性增强 + 胶囊形（半圆弧顶端） */
+.header-search-input {
+  background: rgba(255, 255, 255, 0.96) !important; // 浅色半透明底
+  border: 1px solid #d9d9d9 !important; // 常态灰色底框
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-radius: 999px !important; // 胶囊形，半圆弧效果
+  padding: 6px 16px; // 让形状更协调
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+
+  &:hover {
+    border-color: #bfbfbf !important; // 悬停稍深
+  }
+  &:focus {
+    border-color: #8c8c8c !important; // 聚焦更明显
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
+  }
+  &::placeholder {
+    color: rgba(0, 0, 0, 0.45);
+  }
+}
+
+/* 兼容 antd 结构（若存在外层元素时，保持内部背景透明） */
+.header-search-input .ant-input {
+  background: transparent !important;
+  border-radius: inherit;
 }
 
 .layout-content {

@@ -11,7 +11,7 @@
 // };
 // export default Layout;
 
-import { Layout, Menu, Popconfirm } from "antd";
+import { Layout, Menu, Popconfirm, Input } from "antd";
 import {
   HomeOutlined,
   DiffOutlined,
@@ -75,35 +75,52 @@ const GeekLayout = () => {
   return (
     <Layout>
       <Header className="header">
-        <div className="logo" />
-        <div className="user-info">
-          <span className="user-name">{name}</span>
-          <span className="user-logout">
-            <Popconfirm
-              title="是否确认退出？"
-              okText="退出"
-              cancelText="取消"
-              onConfirm={onConfirm}
-            >
-              <LogoutOutlined /> 退出
-            </Popconfirm>
-          </span>
+        <div className="top-banner" />
+        <div className="header-overlay">
+          <div className="logo" />
+          <div className="search-wrapper">
+            <Input
+              className="header-search-input"
+              placeholder="搜索内容"
+              variant="filled"
+              allowClear
+              size="large"
+            />
+          </div>
+          <div className="user-info">
+            <span className="user-name">{name}</span>
+            <span className="user-logout">
+              <Popconfirm
+                title="是否确认退出？"
+                okText="退出"
+                cancelText="取消"
+                onConfirm={onConfirm}
+              >
+                <LogoutOutlined /> 退出
+              </Popconfirm>
+            </span>
+          </div>
         </div>
       </Header>
       <Layout>
-        <Sider width={200} className="site-layout-background">
+        <Sider width={170} className="site-layout-background">
           <Menu
             mode="inline"
-            theme="dark"
+            theme="light"
             // defaultSelectedKeys={["1"]}默认选中
             selectedKeys={selectedkey}
             onClick={onMenuClick}
             // ant design 的 api 文档中有说明onClick 的“类型”列有说明，是一个对象，里面有 key 字段
             items={items}
-            style={{ height: "100%", borderRight: 0 }}
+            style={{
+              height: "100%",
+
+              borderRight: 0,
+              background: "rgb(245, 245, 245)",
+            }}
           ></Menu>
         </Sider>
-        <Layout className="layout-content" style={{ padding: 20 }}>
+        <Layout className="layout-content" style={{ padding: 5 }}>
           <Outlet />
         </Layout>
       </Layout>
