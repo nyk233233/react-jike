@@ -3,75 +3,13 @@
 // 1) 卡片区使用 CSS Grid 自适应布局；
 // 2) 点击任意卡片，打开 Modal 居中浮层；
 // 3) 浮层左侧为黑底承载的大图（contain防裁切），右侧为标题与正文；
-// 4) 目前数据为本地静态数组 items，后续可替换为接口数据。
+// 4) 数据改为通过简易接口获取列表与详情。
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, Image, Modal, Typography } from "antd"; // 使用 antd 提供的卡片、图片、模态框与排版组件
-
-// 静态图片资源（可替换为你的真实图片或接口返回的 URL）
-import img1 from "@/assets/login2.jpg";
-import img2 from "@/assets/login3.jpg";
-import img3 from "@/assets/chart.png";
-import img4 from "@/assets/图层 1.png";
-import img5 from "@/assets/图层 2.png";
-import img6 from "@/assets/图层 3.png";
+import { getHomeCards, getHomeCardDetail } from "@/apis/home";
 
 const { Title, Paragraph, Text } = Typography; // antd 排版组件，标题/段落/文本
-
-// 数据源：每个 item 代表一个图片卡片
-// - id: 唯一标识
-// - src: 图片地址
-// - title: 标题（卡片标题、弹层标题）
-// - desc: 卡片上的简短描述（两行省略）
-// - content: 弹层右侧的正文内容
-const items = [
-  {
-    id: 1,
-    src: img1,
-    title: "今日日常记录",
-    desc: "街角遇见的一抹温柔光影。",
-    content:
-      "今天散步时看到的角落，光线刚好，想起很多美好的瞬间，随手记录下来。色彩和构图都很简单，但很治愈。",
-  },
-  {
-    id: 2,
-    src: img2,
-    title: "随手拍的色彩",
-    desc: "低饱和的小清新。",
-    content:
-      "随手拍的一张，整体偏低饱和，主色调很舒服。分享给同好，也欢迎在评论区讨论调色思路。",
-  },
-  {
-    id: 3,
-    src: img3,
-    title: "可视化草图",
-    desc: "关于数据小实验的初稿。",
-    content:
-      "这是一个关于数据小实验的可视化草图，后续会继续优化配色与对比度，欢迎提出建议。",
-  },
-  {
-    id: 4,
-    src: img4,
-    title: "色块练习 01",
-    desc: "用形状和色彩讲故事。",
-    content: "尝试用最简单的形状与色块表达情绪，干净、利落，构图留白也很重要。",
-  },
-  {
-    id: 5,
-    src: img5,
-    title: "色块练习 02",
-    desc: "留白与层次的节奏。",
-    content: "继续探索不同的留白比例和层次对画面节奏的影响，找更耐看的平衡点。",
-  },
-  {
-    id: 6,
-    src: img6,
-    title: "色块练习 03",
-    desc: "线条与块面的配合。",
-    content:
-      "线条与块面之间的关系，配色稍微更大胆一点，增加了一点点冲突与张力。",
-  },
-];
 
 // 栅格容器样式：
 // - repeat(auto-fill, minmax(220px, 1fr)) 使其在不同屏幕宽度下自适应列数；
@@ -110,14 +48,67 @@ const coverStyle = {
 
 // Home 页面主体组件
 const Home = () => {
-  // open: 控制 Modal 是否可见；active: 当前点击的卡片数据
+  // 列表数据 & 详情弹层状态
+  const [items, setItems] = useState([]);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(null);
 
-  // 打开弹层：记录当前 item，并显示 Modal
-  const onOpen = (item) => {
+  // 初始化获取卡片列表
+  useEffect(() => {
+    async function fetchList() {
+      try {
+        const res = await getHomeCards();
+        // 期望返回 { data: [...] }
+        setItems(res.data || []);
+      } catch (err) {
+        console.error("获取首页卡片列表失败", err);
+      }
+    }
+    fetchList();
+  }, []);
+
+  // 打开弹层：先显示基本信息，再请求详情补齐 content / cover
+  const onOpen = async (item) => {
+    // 1. 先设置初始状态 - 显示基础卡片信息和打开弹层
     setActive(item);
     setOpen(true);
+
+    try {
+      // 2. 请求详情数据
+      const res = await getHomeCardDetail(item.id);
+      const data = res?.data;
+
+      if (data) {
+        // 3. 从详情数据中提取第一张图片
+        const firstImage = data.cover?.images?.[0];
+
+        // 4. 更新当前激活的卡片详情
+        // - 使用函数式更新确保基于最新状态
+        // - 合并原有数据和新详情数据
+        // - 如果有新图片则更新图片地址
+        setActive((prev) => {
+          const merged = { ...prev, ...data };
+          if (firstImage) merged.src = firstImage;
+          return merged;
+        });
+
+        // 5. 如果有新图片，同步更新列表中对应卡片的图片
+        if (firstImage) {
+          setItems((prev) =>
+            prev.map((it) =>
+              // 找到匹配ID的卡片，更新其图片地址
+              // 如果当前遍历的卡片ID等于目标卡片ID
+              // 则返回一个新对象,包含原卡片所有属性(...it)并更新src为新图片地址
+              // 否则返回原卡片对象不做修改
+              it.id === item.id ? { ...it, src: firstImage } : it
+            )
+          );
+        }
+      }
+    } catch (err) {
+      // 6. 错误处理
+      console.error("获取卡片详情失败", err);
+    }
   };
 
   // 关闭弹层
@@ -156,7 +147,6 @@ const Home = () => {
                 style={{ margin: "6px 0 0" }} // 设置上外边距为6px
                 ellipsis={{ rows: 2 }} // 设置文本超过2行时显示省略号
               >
-                {/* 显示每个卡片的简短描述文本，来自items数组中每个对象的desc属性 */}
                 {item.desc}
               </Paragraph>
             </div>
@@ -164,7 +154,7 @@ const Home = () => {
         ))}
       </div>
 
-      {/* 弹层：左侧大图（黑底承载），右侧文本内容 */}
+      {/* 弹层：左侧大图（灰底承载），右侧文本内容 */}
       <Modal
         open={open}
         onCancel={onClose}
@@ -183,14 +173,12 @@ const Home = () => {
               maxHeight: "700px", // 设置最大高度上限，避免过大
             }}
           >
-            {/* 左侧：黑底包裹，图片使用 contain 保证完整显示且不被裁切 */}
+            {/* 左侧：灰底包裹，图片使用 contain 保证完整显示且不被裁切 */}
             <div
               style={{
                 background: "rgba(247, 247, 247)",
                 display: "flex",
-                // justifyContent: "center" - 控制子元素在主轴(水平)方向上居中对齐
                 justifyContent: "center",
-                // alignItems: "center" - 控制子元素在交叉轴(垂直)方向上居中对齐
                 alignItems: "center",
               }}
             >
@@ -207,16 +195,28 @@ const Home = () => {
               <Title level={4} style={{ marginTop: 0 }}>
                 {active.title}
               </Title>
-              {/* 使用 whiteSpace: pre-wrap 保留文本中的换行和空格，实现多行文本的自然展示效果 */}
-              <Paragraph
-                style={{
-                  whiteSpace: "pre-wrap",
-                  lineHeight: "1.8",
-                  fontSize: "14px",
-                }}
-              >
-                {active.content}
-              </Paragraph>
+              {/* content 支持 HTML（例如 <p>...） */}
+              {active.content ? (
+                <div
+                  style={{
+                    whiteSpace: "normal",
+                    lineHeight: "1.8",
+                    fontSize: "14px",
+                    wordBreak: "break-word",
+                  }}
+                  dangerouslySetInnerHTML={{ __html: active.content }}
+                />
+              ) : (
+                <Paragraph
+                  style={{
+                    whiteSpace: "pre-wrap",
+                    lineHeight: "1.8",
+                    fontSize: "14px",
+                  }}
+                >
+                  正在加载详情...
+                </Paragraph>
+              )}
             </div>
           </div>
         )}
